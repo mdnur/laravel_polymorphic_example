@@ -20,3 +20,4 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::resource('post', 'PostController');
 Route::resource('video', 'VideoController');
+Route::post('/post/commment/{post}/store','CommentController@store')->name('comment.create');

@@ -2,10 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Post;
 use Illuminate\Http\Request;
+use App\Comment;
 
 class PostController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth')->except(['show','index']);
+    }
     /**
      * Display a listing of the resource.
      *
@@ -13,7 +20,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        //
+        $posts = Post::paginate(2);
+        return view('post.index',compact('posts'));
     }
 
     /**
@@ -23,7 +31,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('post.create');
     }
 
     /**
@@ -34,7 +42,17 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request,[
+            'title' => 'required',
+            'body'  => 'required'
+        ]);
+
+        $post  = new Post();
+        $post->title = $request->get('title');
+        $post->body = $request->get('body');
+        $post->user_id = auth()->user()->id;
+        $post->save();
+        return redirect(route('post.index'));
     }
 
     /**
@@ -43,9 +61,9 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(\App\Post $post)
     {
-        //
+        return view('post.show',compact('post'));
     }
 
     /**

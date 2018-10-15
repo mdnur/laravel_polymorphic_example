@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Video;
+use App\Post;
+use App\Comment;
 use Illuminate\Http\Request;
 
-class VideoController extends Controller
+class CommentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,8 +15,7 @@ class VideoController extends Controller
      */
     public function index()
     {
-        $videos = \App\Video::paginate(15);
-        return view('video.index',compact('videos'));
+        //
     }
 
     /**
@@ -25,7 +25,7 @@ class VideoController extends Controller
      */
     public function create()
     {
-        return view('video.create');
+        //
     }
 
     /**
@@ -34,18 +34,21 @@ class VideoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request,Post $post)
     {
         $this->validate($request,[
-            'title' => 'required',
-            'url'  =>'required|url'
+            'body'  =>'required',
+            'commentable_type' =>'required'
         ]);
-        $video = new Video();
-        $video->title   =$request->title;
-        $video->user_id =auth()->user()->id;
-        $video->url     =$request->url;
-        $video->save();
-        return redirect(route('video.index'));
+
+
+        $comment = new Comment();
+        $comment->body = $request->body;
+        $comment->commentable_type = "App\\".$request->commentable_type;
+        $comment->user_id = auth()->user()->id;
+        $comment->commentable_id = $post->id;
+        $comment->save();
+        return back();
     }
 
     /**
@@ -54,9 +57,9 @@ class VideoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Video $video)
+    public function show($id)
     {
-        return view('video.show',compact('video'));
+        //
     }
 
     /**
